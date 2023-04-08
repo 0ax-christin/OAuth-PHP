@@ -35,19 +35,13 @@ $curl = curl_init();
 		echo json_encode($data_fail);
 	} else {
 		$unencryptedAuth = $response->access_token;
-		//$nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-		//$secretKey = file_get_contents("keys/secret.key", true);
-		$secretKey = "OAuthHell";	
-		//$encryptedAuth = sodium_crypto_secretbox($unencryptedAuth, $nonce, $secretKey);
-		//$auth_send_token = sodium_bin2base64($nonce . $encryptedAuth, SODIUM_BASE64_VARIANT_ORIGINAL);
-		$iv = random_bytes(16);
-		$encrypted_Auth_token = openssl_encrypt($unencryptedAuth, "aes-256-cbc", $secretKey, OPENSSL_RAW_DATA, $iv);
-		$combined_iv_token = $iv . $encrypted_Auth_token;
-		$base64_encrypted_token_resp = base64_encode($combined_iv_token);
+		$nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+		$secretKey = file_get_contents("keys/secret.key", true);
+		$encryptedAuth = sodium_crypto_secretbox($unencryptedAuth, $nonce, $secretKey);
+		$auth_send_token = sodium_bin2base64($nonce . $encryptedAuth, SODIUM_BASE64_VARIANT_ORIGINAL);
 		$data_success = array(
 			'auth' => 'success',
-			'ogToken' => $unencryptedAuth,
-			'token' => $base64_encrypted_token_resp //$unencryptedAuth  
+			'token' => $auth_send_token //$unencryptedAuth  
 		);
 		//echo json_encode($data_success);
 
